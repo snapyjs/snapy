@@ -81,18 +81,18 @@ module.exports = {
 You should read the (short) docs of the bold ones.
 
 Activated by default:
-- **[snapy-obj](https://github.com/snapyjs/snapy-obj)**
-- **[snapy-promise](https://github.com/snapyjs/snapy-promise)**
-- **[snapy-transform-obj](https://github.com/snapyjs/snapy-transform-obj)**
-- **[snapy-filter-obj](https://github.com/snapyjs/snapy-filter-obj)**
-- [snapy-entry](https://github.com/snapyjs/snapy-entry)
-- [snapy-cache](https://github.com/snapyjs/snapy-cache)
+- **[snapy-obj](https://github.com/snapyjs/snapy-obj)** - Take a snapshot of an object
+- **[snapy-promise](https://github.com/snapyjs/snapy-promise)** - Take a snapshot of a promise
+- **[snapy-transform-obj](https://github.com/snapyjs/snapy-transform-obj)** - Transform an object before you take a snapshot
+- **[snapy-filter-obj](https://github.com/snapyjs/snapy-filter-obj)** - Filter properties from a snapshot
+- [snapy-entry](https://github.com/snapyjs/snapy-entry) - Sets webpack entry files, when none are given
+- [snapy-cache](https://github.com/snapyjs/snapy-cache) - handles the cache writing to disk
 
 Activated by target: "node"
-- **[snapy-node](https://github.com/snapyjs/snapy-node)**
-- [snapy-file](https://github.com/snapyjs/snapy-file)
-- [snapy-stream](https://github.com/snapyjs/snapy-stream)
-- [snapy-node-report](https://github.com/snapyjs/snapy-node-report)
+- **[snapy-node](https://github.com/snapyjs/snapy-node)** - Test runner for node
+- [snapy-file](https://github.com/snapyjs/snapy-file) - Take a snapshot from a file
+- [snapy-stream](https://github.com/snapyjs/snapy-stream) - Take a snapshot of a stream
+- [snapy-node-report](https://github.com/snapyjs/snapy-node-report) - Asks about the snapshots and offers a error explorer for the terminal
 
 ## Writing tests
 The API is small but powerful:
