@@ -106,7 +106,8 @@ module.exports = (options) =>
       {chunkStats, hashes} = require("./webpack-loader")
 
       moduleToDeps = (module, deps = []) =>
-        concat deps, module.fileDependencies
+        if (fileDeps = module.buildInfo.fileDependencies)?
+          concat deps, Array.from(fileDeps)
         for dep in module.dependencies
           moduleToDeps(dep.module, deps) if dep.module
         return deps
@@ -154,7 +155,6 @@ module.exports = (options) =>
             totalStats = newStats()
             dueStats = newStats() 
             due = {}
-
             for chunk in stats.compilation.chunks
               deps = moduleToDeps(chunk.entryModule)
               for dep in deps
@@ -167,7 +167,6 @@ module.exports = (options) =>
                 addStats(acc,curStat)
                 return acc
                 ), newStats()
-
               if chunkStat.tests > 0
                 addStats(totalStats, chunkStat)
                 if config.runAll or cachedChunks[chunk.name] != chunk.hash

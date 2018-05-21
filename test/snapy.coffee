@@ -1,7 +1,7 @@
 {test} = require "../src/snapy-client.coffee"
 test (snap) =>
   ###
-    some block comment
+    some block commen
   ###
   # some comment
   snap obj: 

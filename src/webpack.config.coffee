@@ -15,6 +15,7 @@ getLoader = (name) => test: getRegExp(name), use: "#{name}-loader"
 
 module.exports = (snapy) =>
   devtool: "source-map"
+  mode: "development"
   output:
     filename: "[chunkhash].js"
   module:
@@ -45,5 +46,4 @@ module.exports = (snapy) =>
     ]
   plugins: [
     new snapyConfigPlugin snapy
-    new webpack.DefinePlugin "process.env.NODE_ENV": '"test"'
   ]

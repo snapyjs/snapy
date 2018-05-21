@@ -128,17 +128,19 @@ snapy.callTest = (index, piece) -> new Promise (resolve) ->
     args.push cleanUp.bind(null, "test")
     Promise.race [
       (testTimeout = makeTimeout("test #{file}:#{testLine}")).start()
-      callTest.apply({timeout:testTimeout},args)
+      callTest.apply(null,args)
       whenCanceled
     ]
-    .then ->
-      (setTimeout (->
-        if addedSnaps.length - snaps > 0
-          throw new Error "not all snaps reached after timeout of #{config.timeout}"
-      ), config.timeout).unref()
-    .catch (e) ->
-      console.error e.stack or e
-      done()
+  .then -> new Promise (resolve, reject) ->
+    (setTimeout (->
+      if snaps - addedSnaps.length > 0
+        reject new Error "not all snaps reached after timeout of #{config.timeout}"
+      else
+        resolve()
+    ), config.timeout).unref()
+  .catch (e) ->
+    console.error e.stack or e
+    done()
 if window?
   window.snapy = snapy
 else if global
