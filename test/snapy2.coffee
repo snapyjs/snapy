@@ -17,7 +17,7 @@ test (snap) =>
       position: "sibling"
       date: Date.now()
 test (snap) =>
-  # next test in snapy2
+  # next test in snapy
   console.log "test in test"
   snap obj: true
   

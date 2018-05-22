@@ -21,8 +21,7 @@
   },
   "files": [
     "lib/*.js",
-    "cli.js",
-    "shrinkwrap.yaml"
+    "cli.js"
   ],
   "dependencies": {
     "acorn": "^5.5.3",
@@ -33,7 +32,7 @@
     "memory-fs": "^0.4.1",
     "ora": "^2.1.0",
     "read-conf": "^0.4.2",
-    "source-map": "^0.7.1",
+    "source-map": "^0.7.3",
     "virtual-module-webpack-plugin": "^0.4.0",
     "webpack": "^4.8.3",
     "webpack-merge": "^4.1.2",
