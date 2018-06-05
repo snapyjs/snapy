@@ -94,6 +94,9 @@ Activated by target: "node"
 - [snapy-stream](https://github.com/snapyjs/snapy-stream) - Take a snapshot of a stream
 - [snapy-node-report](https://github.com/snapyjs/snapy-node-report) - Asks about the snapshots and offers a error explorer for the terminal
 
+Additional
+- [snapy-webpack](https://github.com/snapyjs/snapy-webpack) - Take a snapshot of a webpack output
+
 ## Writing tests
 The API is small but powerful:
 ```js

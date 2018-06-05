@@ -1,4 +1,3 @@
-fs = require "fs-extra"
 path = require "path"
 
 VirtualModulePlugin = require('virtual-module-webpack-plugin')
