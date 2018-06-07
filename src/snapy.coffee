@@ -19,7 +19,11 @@ class Snapy
       actions: 
         "": ["getEntry", "run", "cancel", "success", "fail", "std", "ask"]
         cache: ["get", "set", "discard","keep", "save"]
-      catch: (e) => console.error e
+      catch: (e) => 
+        @readConfig?.cancel(@)
+        status "", "stop"
+        console.error e
+        status chalk.red("Snapy Error occured"), "fail"
   version: 1
   util: util
   fs: fs
@@ -52,13 +56,14 @@ module.exports = (options) =>
     catch: (e) => console.log e
     base: new Snapy
     cancel: (snapy) =>
-      snapy.isCanceled = true
-      status "stopping"
-      snapy._watcher?.close()
-      await snapy.cancel()
-      snapy.resetAllActions()
-      await snapy.isFinished if snapy.isFinished
-      snapy.isCanceled = false
+      unless snapy.isCanceled
+        snapy.isCanceled = true
+        status "stopping"
+        snapy._watcher?.close()
+        await snapy.cancel()
+        snapy.resetAllActions()
+        await snapy.isFinished if snapy.isFinished
+        snapy.isCanceled = false
       status "stopped"
     cb: (snapy) =>
       {config, cache} = snapy
@@ -208,7 +213,6 @@ module.exports = (options) =>
                 await cache.save() 
               #console.log process._getActiveHandles()
             else
-              chalk = require "chalk"
               status chalk.green("No changes detected since last successfull run"), "succeed"
             process.exit() unless options.watch
           

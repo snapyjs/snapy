@@ -1,6 +1,7 @@
+Promise = require "yaku"
 snapy = 
   config: require "./_snapy-config.js"
-  Promise: require "yaku"
+  Promise: Promise
   util: require "./util-client"
 
 hookUp = require "hook-up"
@@ -62,10 +63,9 @@ for plugin in snapy.config.plugins
   plugin = plugin.client if plugin.client
   plugin(snapy)
 
-snapy.callTest = (index, piece) -> new Promise (resolve) ->
+snapy.callTest = (index, piece) ->  new Promise (resolve)->
   [state, callTest, snaps, testLine, testSource, file] = tests[index]
   addedSnaps = []
-
   after = [["",resolve]]
   cleanUp = (place, cb) -> after.push [place, cb]
   done = ->
@@ -98,15 +98,14 @@ snapy.callTest = (index, piece) -> new Promise (resolve) ->
       snapSource: snapSource
       origin: file + ":" + snapLine
     testTimeout.stop()
-    promise = Promise.race [
+    promise = Promise.race([
       (o.timeout = makeTimeout("snap #{file}:#{snapLine}")).start(testTimeout.duration)
       whenCanceled
       snapy.getCache(o)  
         .then snapy.snap
         .then snapy.setCache
         .then snapy.success
-    ]
-    .catch (e) ->
+    ]).catch (e) ->
       if e instanceof Error
         o.stderr = (e.stack or e).toString().split("\n")
       snapy.fail(o)
@@ -126,11 +125,15 @@ snapy.callTest = (index, piece) -> new Promise (resolve) ->
     args = [snap]
     args.push result if result?
     args.push cleanUp.bind(null, "test")
-    Promise.race [
+    return Promise.race([
       (testTimeout = makeTimeout("test #{file}:#{testLine}")).start()
-      callTest.apply(null,args)
       whenCanceled
-    ]
+      new Promise (resolve, reject) ->
+        try
+          resolve(callTest.apply(null, args))
+        catch e
+          reject(e)
+    ])
   .then -> new Promise (resolve, reject) ->
     (setTimeout (->
       if snaps - addedSnaps.length > 0
