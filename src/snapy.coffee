@@ -17,7 +17,7 @@ class Snapy
   constructor: ->
     hookUp @,
       actions: 
-        "": ["getEntry", "run", "cancel", "success", "fail", "std", "ask"]
+        "": ["getEntry", "run", "cancel", "report", "ask"]
         cache: ["get", "set", "discard","keep", "save"]
       catch: (e) => 
         @readConfig?.cancel(@)
@@ -194,7 +194,9 @@ module.exports = (options) =>
             if dueStats.tests and dueStats.snaps
               print "#{dueStats.tests} out of #{totalStats.tests} tests are due for testing (#{dueStats.snaps} snaps)"
 
-              snapy.success.hookIn (chunk) => due[chunk.name]--
+              snapy.report.hookIn (chunk) => 
+                if chunk.success == true
+                  due[chunk.name]--
 
               snapy.run.hookIn position.after, =>
                 for chunk, incomplete of due

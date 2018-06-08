@@ -6,7 +6,7 @@ snapy =
 
 hookUp = require "hook-up"
 hookUp snapy,
-  actions: ["snap","getCache","setCache", "ask", "success", "fail"]
+  actions: ["snap","getCache","setCache", "ask", "report"]
   Promise: snapy.Promise
 
 config = snapy.config
@@ -104,11 +104,11 @@ snapy.callTest = (index, piece) ->  new Promise (resolve)->
       snapy.getCache(o)  
         .then snapy.snap
         .then snapy.setCache
-        .then snapy.success
+        .then snapy.report
     ]).catch (e) ->
       if e instanceof Error
         o.stderr = (e.stack or e).toString().split("\n")
-      snapy.fail(o)
+      snapy.report(o)
     addedSnaps.push promise
     if addedSnaps.length - snaps == 0
       Promise.all(addedSnaps)
