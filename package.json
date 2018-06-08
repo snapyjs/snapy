@@ -37,16 +37,16 @@
     "webpack": "^4.12.0",
     "webpack-merge": "^4.1.2",
     "yaku": "^0.18.6",
-    "snapy-obj": "^0.2.0",
+    "snapy-obj": "^0.1.2",
     "snapy-promise": "^0.1.2",
     "snapy-transform-obj": "^0.1.0",
     "snapy-filter-obj": "^0.1.0",
     "snapy-entry": "^0.1.0",
     "snapy-cache": "^0.1.0",
-    "snapy-node": "^0.2.0",
+    "snapy-node": "^0.1.5",
     "snapy-file": "^0.1.0",
     "snapy-stream": "^0.1.0",
-    "snapy-node-report": "^0.2.0"
+    "snapy-node-report": "^0.1.2"
   },
   "devDependencies": {
     "coffee-loader": "^0.9.0",
