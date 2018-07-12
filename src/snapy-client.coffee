@@ -9,6 +9,16 @@ hookUp snapy,
   actions: ["snap","getCache","setCache", "ask", "report"]
   Promise: snapy.Promise
 
+snapy.ask.hookIn snapy.position.init, (obj) ->
+  obj.timeout.stop() if obj.timeout?
+    
+snapy.ask.hookIn snapy.position.end, (obj) ->
+  obj.timeout.resume() if obj.timeout?
+  if obj.success == true
+    obj.saveState = obj.value
+  else
+    throw o
+
 config = snapy.config
 isFunction = snapy.util.isFunction
 concat = snapy.util.concat
@@ -17,10 +27,13 @@ snapy.tests = tests = []
 snapy.test = (args...) ->
   if args.length == 5
     args.unshift null
-  tests.push args
-snapy.getTestLine = (index) -> tests[index][3]
-snapy.getTestSource = (index) -> tests[index][4]
-snapy.getTestFile = (index) -> tests[index][5]
+  [prepareState, callTest, snaps, testLine, testSource, file] = args
+  origin = file+":"+testLine
+  tests.push prepareState:prepareState, callTest:callTest, snaps: snaps, testLine:testLine, testSource: testSource, file:file, origin:origin
+snapy.getTestObject = getTestObject = (index) -> 
+  throw new Error "not all tests reached" unless tests[index]?
+  return tests[index]
+
 prepare = null
 snapy.prepare = (fn) -> prepare = fn
 snapy.after = (fn) -> snapy.cleanUp = fn
@@ -50,7 +63,7 @@ snapy.makeTimeout = makeTimeout = (position) ->
       str += " in "+position if position 
       reject(new Error str)
       ), timeout.duration
-    lastTimeout.unref()
+    lastTimeout.unref?()
     return promise
   timeout.resume = ->
     if stopped > 0
@@ -63,8 +76,9 @@ for plugin in snapy.config.plugins
   plugin = plugin.client if plugin.client
   plugin(snapy)
 
-snapy.callTest = (index, piece) ->  new Promise (resolve)->
-  [state, callTest, snaps, testLine, testSource, file] = tests[index]
+snapy.callTest = (index, pieceName) ->  new Promise (resolve)->
+  
+  {prepareState, callTest, snaps,file} = testObj = getTestObject(index)
   addedSnaps = []
   after = [["",resolve]]
   cleanUp = (place, cb) -> after.push [place, cb]
@@ -85,21 +99,18 @@ snapy.callTest = (index, piece) ->  new Promise (resolve)->
   testTimeout = null
   allDonePromise = null
   snap = (state, key, description, snapLine, snapSource) ->
-    o = 
+    o = Object.assign {}, testObj,
       state: state
       key: key
-      description:description
-      name: piece.name
-      chunkEntry: piece.entry
-      file: file
-      testLine: testLine
-      testSource: testSource
+      description: description
       snapLine: snapLine
       snapSource: snapSource
       origin: file + ":" + snapLine
+      name: pieceName
+      
     testTimeout.stop()
     promise = Promise.race([
-      (o.timeout = makeTimeout("snap #{file}:#{snapLine}")).start(testTimeout.duration)
+      (o.timeout = makeTimeout("snap #{o.origin}")).start(testTimeout.duration)
       whenCanceled
       snapy.getCache(o)  
         .then snapy.snap
@@ -119,20 +130,16 @@ snapy.callTest = (index, piece) ->  new Promise (resolve)->
     if prepare?
       Promise.race [
         (timeout = makeTimeout("preparation")).start()
-        prepare.call {timeout: timeout}, state, cleanUp.bind(null, "preparation")
+        prepare.call {timeout: timeout}, prepareState, cleanUp.bind(null, "preparation")
       ]
   .then (result) -> 
     args = [snap]
     args.push result if result?
     args.push cleanUp.bind(null, "test")
     return Promise.race([
-      (testTimeout = makeTimeout("test #{file}:#{testLine}")).start()
+      (testTimeout = makeTimeout("test #{testObj.origin}")).start()
       whenCanceled
-      new Promise (resolve, reject) ->
-        try
-          resolve(callTest.apply(null, args))
-        catch e
-          reject(e)
+      callTest.apply(null, args)
     ])
   .then -> new Promise (resolve, reject) ->
     (setTimeout (->
@@ -140,7 +147,7 @@ snapy.callTest = (index, piece) ->  new Promise (resolve)->
         reject new Error "not all snaps reached after timeout of #{config.timeout}"
       else
         resolve()
-    ), config.timeout).unref()
+    ), config.timeout).unref?()
   .catch (e) ->
     console.error e.stack or e
     done()

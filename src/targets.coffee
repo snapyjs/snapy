@@ -5,3 +5,8 @@ module.exports =
     "snapy-file"
     "snapy-stream"
     ]
+  chrome: [
+    "snapy-chrome"
+    "snapy-node-report"
+    "snapy-dom"
+  ]

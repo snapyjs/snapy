@@ -48,7 +48,10 @@ module.exports = (options) =>
       paths: [process.cwd(), path.resolve(__dirname,"..")]
       prepare: ({plugins, target}) =>
         targets = require "./targets"
-        for plugin in targets[target or "node"]
+        target ?= "node"
+        unless targets[target]?
+          throw new Error "snapy: target #{target} not found"
+        for plugin in targets[target]
           plugins.push plugin
     schema: require.resolve("./configSchema")
     concatArrays:true
@@ -194,7 +197,7 @@ module.exports = (options) =>
             if dueStats.tests and dueStats.snaps
               print "#{dueStats.tests} out of #{totalStats.tests} tests are due for testing (#{dueStats.snaps} snaps)"
 
-              snapy.report.hookIn (chunk) => 
+              snapy.report.hookIn (chunk) =>
                 if chunk.success == true
                   due[chunk.name]--
 
